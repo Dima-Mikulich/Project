@@ -1,0 +1,70 @@
+---
+- name: Install Nginx and configure
+  become: true 
+  hosts: local
+  any_errors_fatal: true
+
+  tasks:
+  - name: Install nginx package
+    apt: 
+      name : nginx-full
+      update_cache : yes
+      state : latest 
+
+  - name: Starting nginx service
+    service: 
+      name: nginx 
+      state: started
+
+  - name: Copy cfg file
+    ansible.builtin.copy:
+      src: ./log_rebrain.conf
+      dest: /etc/nginx/conf.d
+      owner: root
+      group: root
+
+  - name: Copy Site file
+    ansible.builtin.copy:
+      src: ./site
+      dest: /etc/nginx/sites-available
+      owner: root
+      group: root
+
+#  - name: Create a symbolic link
+##    ansible.builtin.shell: ln -s /etc/nginx/sites-available/site /etc/nginx/sites-enabled/
+#   args:
+#      executable: /bin/bash
+#    ignore_errors: True
+
+  - name: Create a symbolic link
+    ansible.builtin.file:
+      src: /etc/nginx/sites-available/site
+      dest: /etc/nginx/sites-enabled/site
+      state: link
+
+
+  - name: Remove symlink 
+    file:
+      path: /etc/nginx/modules-enabled/50-mod-mail.conf
+      state: absent
+
+  - name: Creates directory
+    file:
+      path: /var/www/rebrain/images
+      state: directory
+      recurse: yes
+
+  - name: Wget some files
+    ansible.builtin.shell: wget http://rebrainme.com/files/logo_rebrain_black.png  -O /var/www/rebrain/images/logo.png
+    args:
+      executable: /bin/bash
+
+  - name: Wget some files
+    ansible.builtin.shell: wget https://cdn.sstatic.net/Sites/ru/Img/apple-touch-icon.png -O /var/www/rebrain/images/logo1.png
+    args:
+      executable: /bin/bash
+
+  - name: Restart nginx service
+    service: 
+      name: nginx 
+      state: restarted

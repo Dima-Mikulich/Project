@@ -2,11 +2,15 @@
 wget https://releases.hashicorp.com/terraform/1.0.10/terraform_1.0.10_linux_amd64.zip
 unzip terraform_1.0.10_linux_amd64.zip 
 sudo mv terraform /usr/local/bin/
+terraform --version
 # 2. install ansible  
 sudo apt update
 sudo apt install software-properties-common
 sudo add-apt-repository --yes --update ppa:ansible/ansible
 sudo apt install ansible  
+ansible --version
 # 3. install git
+git --version
+sudo apt install git
 git config --global user.name "Dima-Mikulich"
 git config --global user.email "DMikulich@gmail.com"
