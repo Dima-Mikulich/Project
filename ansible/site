@@ -7,7 +7,7 @@ server {
 
 	index index.nginx-debian.html;
 	
-	server_name rebrain ;
+	server_name {{ server_hostname }}.nip.io ;
 	
 	location / {
         	try_files $uri $uri/ =404;

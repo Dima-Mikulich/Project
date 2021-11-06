@@ -25,6 +25,22 @@ resource "digitalocean_droplet" "www-lnx01" {
   private_networking = true
   #user_data = file("terramino_app.yaml")
   ssh_keys  = [digitalocean_ssh_key.my.fingerprint]
+
+provisioner "remote-exec" {
+    inline = ["sudo apt update", "sudo apt install python3 -y", "echo Done!"]
+    connection {
+      type     = "ssh"
+      user     = "root"
+      host     = "${self.ipv4_address}"
+      private_key = file("~/.ssh/id_rsa")
+    }
+  }
+
+provisioner "local-exec" {
+    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i '${self.ipv4_address},' -e '{ 'server_hostname': ${self.ipv4_address} }' ~/project/ansible/Lnx01.yml"
+    
+  }
+
 }
 
 output "ip_address" {

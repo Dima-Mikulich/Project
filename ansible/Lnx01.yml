@@ -1,7 +1,8 @@
 ---
 - name: Install Nginx and configure
   become: true 
-  hosts: local
+  hosts: all
+  remote_user: root
   any_errors_fatal: true
 
   tasks:
@@ -24,17 +25,14 @@
       group: root
 
   - name: Copy Site file
-    ansible.builtin.copy:
+    ansible.builtin.template:
       src: ./site
       dest: /etc/nginx/sites-available
       owner: root
       group: root
+    register: coping
 
-#  - name: Create a symbolic link
-##    ansible.builtin.shell: ln -s /etc/nginx/sites-available/site /etc/nginx/sites-enabled/
-#   args:
-#      executable: /bin/bash
-#    ignore_errors: True
+  - ansible.builtin.debug: var=coping
 
   - name: Create a symbolic link
     ansible.builtin.file:
