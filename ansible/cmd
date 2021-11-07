@@ -1,2 +1,4 @@
 # Отобразить список узлов
 ansible-inventory --list
+
+ansible-playbook -i '137.184.98.209' cd Lnx02.yml

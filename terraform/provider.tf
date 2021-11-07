@@ -47,3 +47,7 @@ output "ip_address" {
   value = digitalocean_droplet.www-lnx01.ipv4_address
   description = "The public IP address of your Droplet application."
 }
+
+output "droplet_tags" {
+  value = data.digitalocean_droplet.www-lnx01.tag
+}

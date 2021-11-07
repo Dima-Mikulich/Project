@@ -14,3 +14,8 @@ git --version
 sudo apt install git
 git config --global user.name "Dima-Mikulich"
 git config --global user.email "DMikulich@gmail.com"
+# 4. path for digital ocean
+ export DIGITALOCEAN_ACCESS_TOKEN=""
+ export TF_LOG=1
+
+ 

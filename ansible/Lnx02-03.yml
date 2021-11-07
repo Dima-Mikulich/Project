@@ -1,0 +1,37 @@
+---
+- name: Install Nginx and configure
+  become: true 
+  hosts: all
+  remote_user: root
+  any_errors_fatal: true
+
+  tasks:
+
+# Add a user to a password file and ensure permissions are set
+  - name: Copy new htpasswd file
+    ansible.builtin.template:
+      src: ./.htpasswd
+      dest: /etc/nginx/.htpasswd
+      owner: root
+      group: root
+
+  - name: Copy cfg file
+    ansible.builtin.copy:
+      src: ./log_rebrain.conf
+      dest: /etc/nginx/conf.d
+      owner: root
+      group: root
+
+  - name: Copy new Site file
+    ansible.builtin.template:
+      src: ./site1
+      dest: /etc/nginx/sites-available/site
+      owner: root
+      group: root
+      backup: yes
+
+
+  - name: Restart nginx service
+    service: 
+      name: nginx 
+      state: restarted
