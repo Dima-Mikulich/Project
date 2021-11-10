@@ -1,0 +1,30 @@
+
+
+  ln -s ../mods-available/proxy.conf proxy.load
+  ln -s ../mods-available/proxy_http.load proxy_http.load
+  ln -s ../mods-available/socache_shmcb.load socache_shmcb.load
+  ln -s ../mods-available/proxy_http2.load proxy_http2.load
+  ln -s ../mods-available/ssl.load
+
+  
+a2enmod proxy
+a2enmod proxy_http
+a2enmod rewrite
+a2enmod deflate
+a2enmod headers
+a2enmod proxy_balancer
+a2enmod proxy_connect
+a2enmod proxy_html
+a2enmod ssl
+mkdir -p /ftp/pub/image
+
+nano /etc/apache2/sites-available/default.conf
+
+a2dissite 000-default.conf
+a2ensite default.conf
+systemctl restart apache2
+
+AuthType "basic"
+AuthName "lb-manager"
+AuthUserFile /etc/apache2/htpasswd
+Require valid-user

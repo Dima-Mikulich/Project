@@ -37,7 +37,7 @@ provisioner "remote-exec" {
   }
 
 provisioner "local-exec" {
-    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i '${self.ipv4_address},' -e '{ 'server_hostname': ${self.ipv4_address} }' ~/project/ansible/Lnx01.yml"
+    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i '${self.ipv4_address},' -e '{ 'server_hostname': ${self.ipv4_address} }' ~/project/ansible/apache/Lnx04.yml"
     
   }
 
@@ -49,5 +49,5 @@ output "ip_address" {
 }
 
 output "droplet_tags" {
-  value = data.digitalocean_droplet.www-lnx01.tag
+  value = digitalocean_droplet.www-lnx01.tags
 }

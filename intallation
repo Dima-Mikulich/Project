@@ -18,4 +18,5 @@ git config --global user.email "DMikulich@gmail.com"
  export DIGITALOCEAN_ACCESS_TOKEN=""
  export TF_LOG=1
 
+Отобразить внешний IP curl -4 icanhazip.com
  
