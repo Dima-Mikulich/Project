@@ -1,0 +1,17 @@
+server {
+    listen 8081 ;
+
+    root /var/www/phpinfo;
+
+    index index.php;
+	
+    server_name {{ server_hostname }}.nip.io ;
+	
+    location ~ \.php$ {
+      try_files $uri =404;
+      fastcgi_pass unix:/var/run/php/php7.4-fpm.sock;
+      fastcgi_index index.php;
+      include fastcgi_params; 
+      fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+    }
+}

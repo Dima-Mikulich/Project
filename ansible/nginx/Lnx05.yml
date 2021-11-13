@@ -1,0 +1,56 @@
+---
+- name: Install Nginx and configure
+  become: true 
+  hosts: all
+  remote_user: root
+  any_errors_fatal: true
+
+  tasks:
+  - name: Install nginx package
+    apt: 
+      name : "{{ item }}"
+      update_cache : yes
+      state : latest 
+    with_items:
+    -  nginx-full
+    -  php-fpm
+
+  - name: Copy cfg file
+    ansible.builtin.copy:
+      src: ./fmp.conf
+      dest: /etc/php/7.4/fpm/conf.d
+      owner: root
+      group: root
+
+  - name: Copy new Site file
+    ansible.builtin.template:
+      src: ./site05
+      dest: /etc/nginx/sites-available/site
+      owner: root
+      group: root
+      backup: yes
+
+  - name: Create a symbolic link
+    ansible.builtin.file:
+      src: /etc/nginx/sites-available/site
+      dest: /etc/nginx/sites-enabled/site
+      state: link
+
+  - name: Creates directory
+    file:
+      path: "/var/www/phpinfo"
+      state: directory
+      recurse: yes
+
+  - name: Download file 
+    get_url:
+      url: https://www.php.net/manual/ru/function.phpinfo.php
+      dest: /var/www/phpinfo/index.php   
+
+  - name: Restart nginx service
+    service: 
+      name: "{{ item }}"
+      state: restarted
+    with_items:
+    - php7.4-fpm
+    - nginx
