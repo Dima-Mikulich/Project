@@ -1,0 +1,70 @@
+---
+# tasks file for roles/powerdns
+- name: Install PowerDNS server for {{ ansible_distribution }}
+  apt:
+    name: "{{ powerdns_packages }}"
+    state: present
+
+- name: stop and disable systemd-resolved
+  systemd:
+    name: "systemd-resolved"
+    state: stopped 
+    enabled: no
+
+- name: Create new resolv.conf file
+  shell: echo "nameserver 8.8.8.8" > /etc/resolv.conf
+
+- name: Create Database
+  mysql_db:
+    name: "{{ database }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    state: present
+
+- name: Create mysql User defined database
+  mysql_user:
+    name: "{{ db_user_name }}"
+    password: "{{ db_user_password }}"
+    priv: '{{ database }}.*:{{ priviliges }}'
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    state: present
+
+- name: Import init script to database
+  mysql_db:
+    name: "{{ database }}"
+    state: import
+    target: /usr/share/pdns-backend-mysql/schema/schema.mysql.sql 
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+
+- name: Make mariadb server file configuration
+  template:
+    src: pdns.local.gmysql.j2
+    dest: /etc/powerdns/pdns.d/pdns.local.gmysql.conf
+    mode: '0644'
+
+- name: restart powerdns server
+  systemd:
+    name: "{{ powerdns_service }}"
+    state: restarted
+    enabled: yes
+
+- name: Copy database init script dns_zones
+  template:
+    src: dns_zones.j2
+    dest: /tmp/table.sql
+
+- name: Import init script to database
+  mysql_db:
+    name: "{{ database }}"
+    state: import
+    target: /tmp/table.sql
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+
+
+- name: Delete init script file
+  file:
+    path: /tmp/table.sql
+    state: absent 

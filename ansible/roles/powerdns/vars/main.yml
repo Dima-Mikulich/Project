@@ -1,0 +1,12 @@
+---
+# vars file for roles/powerdns
+powerdns_packages:
+  - pdns-server
+  - pdns-backend-mysql
+mariadb_service: mariadb
+powerdns_service: pdns
+database: powerdns
+db_user_name: "pdnsadmin"
+db_user_password: "qwerty"
+priviliges: "ALL"
+Domain_name: rebrainme.com

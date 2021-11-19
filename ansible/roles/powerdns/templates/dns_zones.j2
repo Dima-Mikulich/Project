@@ -1,0 +1,9 @@
+# Define PowerDNS Operation Mode
+insert into domains (name, type) values ('{{ Domain_name }}', 'NATIVE');
+# Create the domain SOA (Start Of Authority) record.
+INSERT INTO records (domain_id, name, content, type,ttl,prio) VALUES (1,'{{ Domain_name }}','{{ansible_hostname}}.{{ Domain_name }} admin.{{ Domain_name }} 1 10380 3600 604800 3600','SOA',86400,NULL);
+# Create Nameserver NS records
+INSERT INTO records (domain_id, name, content, type,ttl,prio) VALUES (1,'{{ Domain_name }}','{{ansible_hostname}}.{{ Domain_name }}','NS',86400,NULL);
+# Insert A Records for the Nameserver
+INSERT INTO records (domain_id, name, content, type,ttl,prio) VALUES (1,'{{ Domain_name }}','{{inventory_hostname}}','A',120,NULL);
+INSERT INTO records (domain_id, name, content, type,ttl,prio) VALUES (1,'{{ansible_hostname}}.{{ Domain_name }}','{{inventory_hostname}}','A',120,NULL);

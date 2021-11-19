@@ -1,0 +1,3 @@
+---
+# defaults file for roles/powerdns
+mysql_root_password: 'azerty'

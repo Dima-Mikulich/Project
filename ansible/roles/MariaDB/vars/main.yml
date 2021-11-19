@@ -1,0 +1,37 @@
+---
+# vars file for MariaDB
+mariadb_packages:
+  - mariadb-server
+  - mariadb-common
+  - python-openssl
+  - python3-mysqldb
+repo_software_package:
+  - software-properties-common 
+  - dirmngr
+key_url: "https://mariadb.org/mariadb_release_signing_key.asc"
+repo_deb: deb [arch=amd64,arm64,ppc64el] https://mirror.klaus-uwe.me/mariadb/repo/10.5/ubuntu
+mariadb_socket: /run/mysqld/mysqld.sock
+mariadb_version: "10.4"
+mariadb_config_file:
+  mysqld:
+    - "user = mysql"
+    - "port = 3306"
+    - "datadir = /var/lib/mysql"
+    - "skip-external-locking"
+    - "key_buffer_size	= 16M"
+    - "max_allowed_packet	= 16M"
+    - "thread_stack	= 192K"
+    - "thread_cache_size = 8"
+    - "query_cache_size  = 32M"
+    - "log_error = /var/log/mariadb/error.log"
+    - "unix_socket=OFF"
+    - "bind-address= 127.0.0.1"
+swappiness: "0"
+mariadb_service: mariadb
+mariadb_logrotate:
+    rotate: "7"
+    rotation: daily
+database: cdr
+db_user_name: "userdata"
+db_user_password: "qwerty"
+priviliges: "ALL"

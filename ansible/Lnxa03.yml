@@ -1,0 +1,11 @@
+---
+- name: Install Powerdns + MariaDB and configure
+  become: true 
+  hosts: all
+  remote_user: root
+  any_errors_fatal: true
+
+  roles:
+    - MariaDB
+    - powerdns 
+

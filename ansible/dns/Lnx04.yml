@@ -1,0 +1,90 @@
+---
+- name: Install BIND and configure
+  become: true 
+  hosts: all
+  remote_user: root
+  any_errors_fatal: true
+
+  tasks:
+  - name: Install BIND package
+    apt: 
+      name : bind9
+      update_cache : yes
+      state : latest 
+
+  - name: Copy default Site file
+    ansible.builtin.copy:
+      src: ./default.conf
+      dest: /etc/apache2/sites-available
+      owner: root
+      group: root
+
+  - name: Copy Site file
+    ansible.builtin.template:
+      src: ./index.nginx-debian.html
+      dest: /var/www/html
+      owner: root
+      group: root
+
+  - name: Copy index page
+    ansible.builtin.template:
+      src: ./site.conf
+      dest: /etc/apache2/sites-available
+      owner: root
+      group: root    
+#    register: coping
+
+#  - ansible.builtin.debug: var=coping
+  - name: Copy .htpasswd file
+    ansible.builtin.copy:
+      src: ./.htpasswd
+      dest: /etc/apache2/.htpasswd
+      owner: root
+      group: root
+
+  - name: Enable nessesory mods
+    command: "a2enmod {{ item }}"
+    with_items:
+      - proxy
+      - proxy_http
+      - rewrite
+      - deflate
+      - headers
+      - proxy_balancer
+      - proxy_connect
+      - proxy_html
+      - ssl
+      - lbmethod_byrequests
+
+  - name: Disable default site
+    command: "a2dissite 000-default.conf"
+
+  - name: Enable my default site
+    command: "a2ensite default.conf"
+
+  - name: Enable my default site
+    command: "a2ensite site.conf"    
+
+  - name: Creates directory
+    file:
+      path: "{{ item }}"
+      state: directory
+      recurse: yes
+    with_items: 
+    - /var/www/rebrain/images
+    - /ftp/pub/image
+
+  - name: Download file 
+    get_url:
+      url: http://rebrainme.com/files/logo_rebrain_black.png
+      dest: /var/www/rebrain/images/logo.png
+
+  - name: Download file 
+    get_url:
+      url: https://cdn.sstatic.net/Sites/ru/Img/apple-touch-icon.png
+      dest: /var/www/rebrain/images/logo1.png
+
+  - name: Restart nginx service
+    service: 
+      name: apache2 
+      state: restarted

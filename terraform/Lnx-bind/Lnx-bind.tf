@@ -16,6 +16,7 @@ resource "digitalocean_ssh_key" "my" {
   public_key = file("~/.ssh/id_rsa.pub")
 }
 
+
 resource "digitalocean_droplet" "www-lnx05" {
   image     = "ubuntu-20-04-x64"
   name      = "www-lnx05"
@@ -26,8 +27,9 @@ resource "digitalocean_droplet" "www-lnx05" {
   #user_data = file("terramino_app.yaml")
   ssh_keys  = [digitalocean_ssh_key.my.fingerprint]
 
-provisioner "remote-exec" {
-    inline = ["sudo apt update", "sudo apt install python3 -y", "echo Done!"]
+  provisioner "file" {
+    source      = "~/project/terraform/Lnx-bind/bind.sh"
+    destination = "/tmp/bind.sh"
     connection {
       type     = "ssh"
       user     = "root"
@@ -36,11 +38,18 @@ provisioner "remote-exec" {
     }
   }
 
-provisioner "local-exec" {
-    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i '${self.ipv4_address},' -e '{ 'server_hostname': ${self.ipv4_address} }' ~/project/ansible/Lnxa03.yml"
-    
+  provisioner "remote-exec" {
+    inline = ["apt update", 
+              "chmod +x /tmp/bind.sh",
+              "/tmp/bind.sh ${self.ipv4_address}",
+              "echo Done!"]
+    connection {
+      type     = "ssh"
+      user     = "root"
+      host     = "${self.ipv4_address}"
+      private_key = file("~/.ssh/id_rsa")
+    }
   }
-
 }
 
 output "ip_address" {
